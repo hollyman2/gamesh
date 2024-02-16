@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 django = "*"
+django-allauth = "==0.52.0"
+django-celery-email = "*"
 
 [dev-packages]
 

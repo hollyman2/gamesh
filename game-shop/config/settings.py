@@ -39,6 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Account',
+    'Games',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django_extensions',
+    'djcelery_email',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.middleware.AuthRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -101,6 +108,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -112,8 +126,43 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+ACCOUNT_FORMS = {
+    "login": "allauth.account.forms.LoginForm",
+    "add_email": "allauth.account.forms.AddEmailForm",
+    "change_password": "allauth.account.forms.ChangePasswordForm",
+    "set_password": "allauth.account.forms.SetPasswordForm",
+    "reset_password": "allauth.account.forms.ResetPasswordForm",
+    "reset_password_from_key": "allauth.account.forms.ResetPasswordKeyForm",
+    "disconnect": "allauth.socialaccount.forms.DisconnectForm",
+    # Use our custom signup form
+    "signup": "Account.forms.SignupForm",
+}
+
+SITE_ID = 1
+'''настройки почты'''
+
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
 AUTH_USER_MODEL = 'Account.Account'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER = os.getenv('GMAIL_ACCOUNT')
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = os.getenv('GMAIL_PASSWORD')
+EMAIL_USE_TLS = True
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+LOGIN_URL = 'account/default/login'
+LOGIN_REDIRECT_URL = '/'
+SIGNUP_REDIRECT_URL = ''
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Static files (CSS, JavaScript, Images)
